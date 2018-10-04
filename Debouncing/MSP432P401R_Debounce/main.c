@@ -3,8 +3,7 @@
  *Last Updated: October 3, 2018
 */
 #include <msp432.h>
-void main(void)
-{
+void main(void) {
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD; // Disable the watchdog timer
     P2DIR |= BIT2;                          // Set P2.2 (Blue LED) to output direction
     P1DIR &= ~BIT1;                         // Set P1.1 (Button) to input direction
@@ -19,11 +18,11 @@ void main(void)
     __enable_irq();                         // Enable global interrupt
     SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;    // Disable the sleep on exit feature
     __sleep();                              // Sleep Mode
+    
     while(1){};                             // Infinite while loop
 }
 // Interrupt service routine for P1
-void PORT1_IRQHandler(void)
-{
+void PORT1_IRQHandler(void){
     P2OUT ^= BIT2;                          // Toggle Blue LED (P2.2) ON
     P1IE &= ~BIT1;                          // Disable interrupt on button
     P1IFG &= ~BIT1;                         // Clear interrupt flags for button
@@ -31,8 +30,7 @@ void PORT1_IRQHandler(void)
     TA0CCR0 = 10000;                        // Set capture compare register value for timer count (~10ms)
 }
 // Interrupt service routine for Timer A
-void TA0_0_IRQHandler(void)
-{
+void TA0_0_IRQHandler(void){
     TA0CTL = MC_0 + TACLR;                  // Timer Control: Stop Mode (Halt Timer), Clear timer
     P1IE |= BIT1;                           // Re-enable interrupt for button to detect next press
     P1IFG &= ~BIT1;                         // Clear interrupt flags on button
